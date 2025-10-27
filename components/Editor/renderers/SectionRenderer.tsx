@@ -45,7 +45,7 @@ function SortableWidgetInColumn({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
     opacity: isDragging ? 0.5 : 1,
   }
 
@@ -55,12 +55,18 @@ function SortableWidgetInColumn({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={`relative group animate-in fade-in slide-in-from-top-4 duration-500 ${
+        isDragging ? 'z-50' : ''
+      }`}
+    >
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className={`absolute -right-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 text-white rounded flex items-center justify-center cursor-move opacity-0 group-hover:opacity-100 transition-opacity z-20 ${
+        className={`absolute -right-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 text-white rounded flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-20 ${
           isSelected ? 'opacity-100' : ''
         }`}
         title="גרור widget"
@@ -77,7 +83,7 @@ function SortableWidgetInColumn({
               onDelete()
             }
           }}
-          className="absolute -left-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition-colors z-20"
+          className="absolute -left-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 hover:scale-110 transition-all z-20"
           title="מחק"
         >
           <Trash2 className="w-3 h-3" />
@@ -217,7 +223,7 @@ export default function SectionRenderer({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
     opacity: isDragging ? 0.5 : 1,
   }
 
