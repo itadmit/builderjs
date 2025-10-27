@@ -371,21 +371,7 @@ export default function VisualEditor({
       </div>
 
       {/* Drag Overlay */}
-      <DragOverlay 
-        dropAnimation={{
-          duration: 300,
-          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-          dragSourceOpacity: 0,
-          sideEffects: {
-            opacity: {
-              duration: 200,
-            },
-            transform: {
-              duration: 300,
-            },
-          },
-        }}
-      >
+      <DragOverlay dropAnimation={null}>
         {activeWidget && (() => {
           const IconComponent = (Icons as any)[activeWidget.icon]
           return (
