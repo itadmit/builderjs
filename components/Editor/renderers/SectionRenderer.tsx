@@ -131,7 +131,11 @@ function ColumnDropZone({
     },
   })
 
-  const columnStyle = stylesToCSS(column.styles || {}, viewport)
+  const columnStyle = {
+    ...stylesToCSS(column.styles || {}, viewport),
+    display: 'flex',
+    flexDirection: 'column' as const,
+  }
 
   return (
     <div
