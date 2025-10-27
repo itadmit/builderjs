@@ -24,7 +24,7 @@ export interface Widget {
 export interface Column {
   id: string
   widgets: Widget[]
-  width?: number // ברירת מחדל: חלוקה שווה
+  width?: number // Percentage (e.g., 50 for 50%)
   styles?: WidgetStyles
 }
 
@@ -32,9 +32,10 @@ export interface Section {
   id: string
   type: 'section'
   columns: Column[]
-  columnCount: 1 | 2 | 3 | 4
-  gap?: number
+  columnCount: 1 | 2 | 3 | 4 | 5 | 6
+  gap?: number // Gap between columns in pixels
   styles: WidgetStyles
+  layout?: 'default' | '30-70' | '70-30' | '25-75' | '75-25' | '33-66' | '66-33' // Predefined layouts
 }
 
 // Type union for all possible items in the editor
@@ -66,16 +67,22 @@ export interface WidgetStyles {
   borderWidth?: number
   borderColor?: string
   borderRadius?: number
+  borderStyle?: 'solid' | 'dashed' | 'dotted' | 'none'
   
   // Dimensions
   width?: string
   height?: string
   maxWidth?: string
+  minHeight?: string
   
   // Display
   display?: string
   justifyContent?: string
   alignItems?: string
+  
+  // Visibility
+  hideOnDesktop?: boolean
+  hideOnMobile?: boolean
 }
 
 export interface ResponsiveStyles {

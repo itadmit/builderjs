@@ -1,9 +1,50 @@
 // Utility functions for the visual editor
 
-import { Widget, WidgetStyles, ViewportMode } from './types'
+import { Widget, WidgetStyles, ViewportMode, Section, Column } from './types'
 
 export function generateId(): string {
   return `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+}
+
+// Create a new section with columns
+export function createSection(columnCount: 1 | 2 | 3 | 4 | 5 | 6 = 1, layout?: Section['layout']): Section {
+  const columns: Column[] = []
+  
+  for (let i = 0; i < columnCount; i++) {
+    columns.push({
+      id: generateId(),
+      widgets: [],
+      styles: {},
+    })
+  }
+
+  return {
+    id: generateId(),
+    type: 'section',
+    columns,
+    columnCount,
+    gap: 20,
+    layout,
+    styles: {
+      paddingTop: 40,
+      paddingBottom: 40,
+      paddingLeft: 20,
+      paddingRight: 20,
+    },
+  }
+}
+
+// Duplicate a section
+export function duplicateSection(section: Section): Section {
+  return {
+    ...section,
+    id: generateId(),
+    columns: section.columns.map(col => ({
+      ...col,
+      id: generateId(),
+      widgets: col.widgets.map(w => cloneWidget(w)),
+    })),
+  }
 }
 
 // Get effective styles for a widget based on viewport mode
