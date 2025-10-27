@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 
 const VisualEditor = dynamic(
-  () => import('@/components/Editor/VisualEditor'),
+  () => import('@/components/Editor/core/VisualEditor'),
   { ssr: false }
 )
 

@@ -3,9 +3,9 @@
 import dynamic from 'next/dynamic'
 
 const VisualEditor = dynamic(
-  () => import('@/components/Editor/VisualEditor'),
+  () => import('@/components/Editor'),
   { ssr: false }
-)
+).then(mod => mod.VisualEditor)
 
 interface PublicPageContentProps {
   content: any
