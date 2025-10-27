@@ -49,7 +49,7 @@ function DraggableWidget({ type, label, icon }: { type: string; label: string; i
 }
 
 export default function WidgetsPanel({ onAddSection }: WidgetsPanelProps) {
-  const [activeTab, setActiveTab] = useState<'sections' | 'widgets'>('sections')
+  const [activeTab, setActiveTab] = useState<'sections' | 'widgets'>('widgets')
   const [search, setSearch] = useState('')
 
   const categories = {
