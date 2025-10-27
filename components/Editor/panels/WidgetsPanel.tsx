@@ -27,14 +27,23 @@ function DraggableWidget({ type, label, icon }: { type: string; label: string; i
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`flex flex-col items-center gap-2 p-3 border-2 rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-move group ${
-        isDragging ? 'opacity-50' : ''
+      className={`flex flex-col items-center gap-2 p-3 border-2 rounded-lg transition-all cursor-grab active:cursor-grabbing group ${
+        isDragging 
+          ? 'opacity-30 scale-95 border-primary bg-primary/20' 
+          : 'border-gray-200 hover:border-primary hover:bg-primary/5 hover:shadow-lg hover:scale-105'
       }`}
+      style={{ touchAction: 'none', userSelect: 'none' }}
     >
       {IconComponent && (
-        <IconComponent className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+        <IconComponent className={`w-6 h-6 transition-all ${
+          isDragging 
+            ? 'text-primary scale-125' 
+            : 'text-primary group-hover:scale-110'
+        }`} />
       )}
-      <span className="text-xs font-medium text-center">{label}</span>
+      <span className={`text-xs font-medium text-center transition-all ${
+        isDragging ? 'scale-110' : ''
+      }`}>{label}</span>
     </div>
   )
 }

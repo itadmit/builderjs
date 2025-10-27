@@ -134,9 +134,9 @@ function ColumnDropZone({
         e.stopPropagation()
         onSelect()
       }}
-      className={`relative min-h-[150px] rounded-lg transition-all ${
+      className={`relative min-h-[150px] rounded-lg transition-all duration-300 ${
         isOver
-          ? 'ring-2 ring-blue-500 bg-blue-50'
+          ? 'ring-4 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg scale-[1.02] border-2 border-blue-500'
           : isSelected
           ? 'ring-2 ring-blue-400 bg-blue-50/50'
           : isActive
@@ -154,9 +154,22 @@ function ColumnDropZone({
 
       {/* Empty state */}
       {column.widgets.length === 0 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
-          <Plus className="w-10 h-10 mb-2" />
-          <p className="text-sm">גרור widget לכאן</p>
+        <div className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-all ${
+          isOver ? 'text-blue-600 scale-110' : 'text-gray-400'
+        }`}>
+          <Plus className={`w-10 h-10 mb-2 transition-all ${isOver ? 'animate-bounce' : ''}`} />
+          <p className={`text-sm font-medium transition-all ${isOver ? 'text-lg' : ''}`}>
+            {isOver ? '🎯 שחרר כאן!' : 'גרור widget לכאן'}
+          </p>
+        </div>
+      )}
+      
+      {/* Drag over indicator for non-empty columns */}
+      {isOver && column.widgets.length > 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 bg-blue-500/10">
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg font-medium animate-bounce">
+            🎯 שחרר כאן
+          </div>
         </div>
       )}
 

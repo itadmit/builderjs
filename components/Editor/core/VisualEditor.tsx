@@ -18,6 +18,7 @@ import Canvas from './Canvas'
 import WidgetsPanel from '../panels/WidgetsPanel'
 import PropertiesPanel from '../panels/PropertiesPanel'
 import EditorHeader from './EditorHeader'
+import * as Icons from 'lucide-react'
 
 export default function VisualEditor({
   initialValue,
@@ -52,6 +53,18 @@ export default function VisualEditor({
     }),
     useSensor(KeyboardSensor)
   )
+  
+  // Add dragging class to body for cursor
+  useEffect(() => {
+    if (activeId) {
+      document.body.style.cursor = 'grabbing'
+    } else {
+      document.body.style.cursor = ''
+    }
+    return () => {
+      document.body.style.cursor = ''
+    }
+  }, [activeId])
 
   // Save to parent
   useEffect(() => {
@@ -253,6 +266,7 @@ export default function VisualEditor({
   // Drag and Drop handlers
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
+    console.log('Drag started:', event.active.id, event.active.data.current)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -291,6 +305,22 @@ export default function VisualEditor({
     // TODO: Implement read-only view
     return <div>Read-only view</div>
   }
+
+  // Get active widget definition for drag overlay
+  const getActiveWidget = () => {
+    if (!activeId) return null
+    
+    // Check if dragging a new widget from panel
+    if (activeId.toString().startsWith('new-widget-')) {
+      const widgetType = activeId.toString().replace('new-widget-', '')
+      const definition = getWidgetDefinition(widgetType as WidgetType)
+      return definition
+    }
+    
+    return null
+  }
+
+  const activeWidget = getActiveWidget()
 
   return (
     <DndContext
@@ -339,6 +369,24 @@ export default function VisualEditor({
           />
         </div>
       </div>
+
+      {/* Drag Overlay */}
+      <DragOverlay dropAnimation={{
+        duration: 200,
+        easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+      }}>
+        {activeWidget && (() => {
+          const IconComponent = (Icons as any)[activeWidget.icon]
+          return (
+            <div className="flex flex-col items-center gap-2 p-4 bg-white border-2 border-primary rounded-lg shadow-2xl scale-110 animate-pulse">
+              {IconComponent && (
+                <IconComponent className="w-8 h-8 text-primary" />
+              )}
+              <span className="text-sm font-bold text-primary">{activeWidget.label}</span>
+            </div>
+          )
+        })()}
+      </DragOverlay>
     </DndContext>
   )
 }
