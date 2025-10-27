@@ -9,7 +9,9 @@ export default function Header({ userName }: { userName?: string | null }) {
     <header className="border-b bg-white sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-primary">QuickLanding</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent leading-none pt-1 pb-3" style={{ fontFamily: "'Pacifico', cursive" }}>
+            QuickLanding
+          </h1>
         </div>
         <div className="flex items-center gap-4">
           {userName && (

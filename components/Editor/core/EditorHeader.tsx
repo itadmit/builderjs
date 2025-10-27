@@ -46,7 +46,7 @@ export default function EditorHeader({
               <X className="w-5 h-5" />
             </button>
           )}
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: "'Pacifico', cursive" }}>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent leading-none pt-1 pb-3" style={{ fontFamily: "'Pacifico', cursive" }}>
             QuickLanding
           </h1>
           <span className="text-gray-300">|</span>

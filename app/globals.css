@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Pacifico&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -67,5 +67,18 @@ html[dir="rtl"] body {
 .slate-editor {
   direction: rtl;
   text-align: right;
+}
+
+/* Sonner Toast Styling */
+[data-sonner-toast] {
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-family: 'Open Sans', sans-serif !important;
 }
 

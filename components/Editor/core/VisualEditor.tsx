@@ -275,10 +275,9 @@ export default function VisualEditor({
 
     if (!over) return
 
-    addToHistory()
-
     // Handle section reordering
     if (active.data.current?.type === 'section' && over.data.current?.type === 'section') {
+      addToHistory()
       setState((prev) => {
         const oldIndex = prev.sections.findIndex((s) => s.id === active.id)
         const newIndex = prev.sections.findIndex((s) => s.id === over.id)
@@ -287,6 +286,46 @@ export default function VisualEditor({
           sections: arrayMove(prev.sections, oldIndex, newIndex),
         }
       })
+      return
+    }
+
+    // Handle widget reordering within same column
+    if (active.data.current?.type === 'widget' && over.data.current?.type === 'widget') {
+      addToHistory()
+      setState((prev) => {
+        const activeWidget = findWidget(prev.sections, active.id as string)
+        const overWidget = findWidget(prev.sections, over.id as string)
+        
+        if (!activeWidget || !overWidget) return prev
+        
+        // Only reorder if in same column
+        if (activeWidget.columnId === overWidget.columnId && activeWidget.sectionId === overWidget.sectionId) {
+          return {
+            ...prev,
+            sections: prev.sections.map((section) => {
+              if (section.id !== activeWidget.sectionId) return section
+              
+              return {
+                ...section,
+                columns: section.columns.map((col) => {
+                  if (col.id !== activeWidget.columnId) return col
+                  
+                  const oldIndex = col.widgets.findIndex((w) => w.id === active.id)
+                  const newIndex = col.widgets.findIndex((w) => w.id === over.id)
+                  
+                  return {
+                    ...col,
+                    widgets: arrayMove(col.widgets, oldIndex, newIndex),
+                  }
+                }),
+              }
+            }),
+          }
+        }
+        
+        return prev
+      })
+      return
     }
 
     // Handle widget drop into column
@@ -297,6 +336,44 @@ export default function VisualEditor({
       // New widget from panel
       if (active.data.current?.widgetType) {
         handleAddWidget(active.data.current.widgetType, columnId, sectionId)
+      }
+      // Move existing widget to different column
+      else if (active.data.current?.type === 'widget') {
+        const activeWidget = findWidget(state.sections, active.id as string)
+        if (activeWidget) {
+          // Only move if to different column
+          if (activeWidget.columnId !== columnId || activeWidget.sectionId !== sectionId) {
+            addToHistory()
+            setState((prev) => {
+              // Remove from old location
+              const newSections = prev.sections.map((section) => ({
+                ...section,
+                columns: section.columns.map((col) => ({
+                  ...col,
+                  widgets: col.widgets.filter((w) => w.id !== active.id),
+                })),
+              }))
+              
+              // Add to new location
+              return {
+                ...prev,
+                sections: newSections.map((section) => {
+                  if (section.id !== sectionId) return section
+                  return {
+                    ...section,
+                    columns: section.columns.map((col) => {
+                      if (col.id !== columnId) return col
+                      return {
+                        ...col,
+                        widgets: [...col.widgets, activeWidget.widget],
+                      }
+                    }),
+                  }
+                }),
+              }
+            })
+          }
+        }
       }
     }
   }

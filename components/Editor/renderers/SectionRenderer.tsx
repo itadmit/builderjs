@@ -14,8 +14,8 @@ interface SectionRendererProps {
   onSelect: () => void
   onDelete: () => void
   onDuplicate: () => void
-  onSelectWidget: (widgetId: string, columnId: string) => void
-  onDeleteWidget: (widgetId: string, columnId: string) => void
+  onSelectWidget: (widgetId: string, columnId: string, sectionId: string) => void
+  onDeleteWidget: (widgetId: string, columnId: string, sectionId: string) => void
   onSelectColumn: (columnId: string) => void
   selectedWidgetId?: string
   selectedColumnId?: string
@@ -45,7 +45,7 @@ function SortableWidgetInColumn({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    transition,
     opacity: isDragging ? 0.5 : 1,
   }
 
@@ -227,7 +227,7 @@ export default function SectionRenderer({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    transition,
     opacity: isDragging ? 0.5 : 1,
   }
 
@@ -374,7 +374,7 @@ export default function SectionRenderer({
               isActive={isSelected}
               isSelected={selectedColumnId === column.id}
               onSelectWidget={(widgetId) => onSelectWidget(widgetId, column.id, section.id)}
-              onDeleteWidget={(widgetId) => onDeleteWidget(widgetId, column.id)}
+              onDeleteWidget={(widgetId) => onDeleteWidget(widgetId, column.id, section.id)}
               onSelect={() => onSelectColumn(column.id)}
               selectedWidgetId={selectedWidgetId}
               viewport={viewport}

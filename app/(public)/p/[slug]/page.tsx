@@ -41,9 +41,9 @@ export default async function PublicPage({ params }: PublicPageProps) {
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <span className="text-sm text-muted-foreground">
-            נבנה עם QuickLanding
-          </span>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent leading-none pt-1 pb-3" style={{ fontFamily: "'Pacifico', cursive" }}>
+            QuickLanding
+          </h1>
         </div>
       </header>
 
@@ -73,7 +73,8 @@ export default async function PublicPage({ params }: PublicPageProps) {
             נבנה עם ❤️ באמצעות{' '}
             <a
               href="https://quicklanding.co"
-              className="text-primary hover:underline"
+              className="font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent hover:underline leading-none inline-block"
+              style={{ fontFamily: "'Pacifico', cursive" }}
             >
               QuickLanding
             </a>

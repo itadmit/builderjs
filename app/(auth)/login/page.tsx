@@ -104,7 +104,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-primary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary mb-2">QuickLanding</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2 leading-none pt-2 pb-4" style={{ fontFamily: "'Pacifico', cursive" }}>
+            QuickLanding
+          </h1>
           <p className="text-muted-foreground">בניית דפי נחיתה בעברית</p>
         </div>
 
