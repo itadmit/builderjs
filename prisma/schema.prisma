@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  pages     Page[]
+  createdAt DateTime @default(now())
+}
+
+model Page {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  title       String
+  slug        String   @unique
+  content     Json     // תוכן React-Page
+  webhookUrl  String?
+  published   Boolean  @default(false)
+  leads       Lead[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([slug])
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  pageId    String
+  name      String
+  phone     String
+  email     String?
+  message   String?
+  createdAt DateTime @default(now())
+
+  @@index([pageId])
+}
+
+model Template {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  category  String?  // "קליניקה", "נדל״ן", "איקומרס", "קורסים"...
+  content   Json     // JSON מוכן של React-Page
+  createdAt DateTime @default(now())
+}
+
