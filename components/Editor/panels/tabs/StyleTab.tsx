@@ -159,15 +159,190 @@ export default function StyleTab({ selection, sections, viewport, onUpdate }: Pa
       <div className="space-y-4">
         <h4 className="font-semibold text-sm border-b pb-2">רקע</h4>
         
-        <div className="space-y-2">
-          <label className="text-xs font-medium">צבע רקע</label>
-          <input
-            type="color"
-            value={styles.backgroundColor || '#ffffff'}
-            onChange={(e) => updateStyle('backgroundColor', e.target.value)}
-            className="w-full h-10 rounded border"
-          />
-        </div>
+        {/* Background Type Selector for Section */}
+        {selection.type === 'section' && (
+          <div className="space-y-2">
+            <label className="text-xs font-medium">סוג רקע</label>
+            <div className="flex gap-2">
+              {[
+                { value: 'color', label: 'צבע' },
+                { value: 'image', label: 'תמונה' },
+                { value: 'video', label: 'וידאו' },
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => updateStyle('backgroundType', value)}
+                  className={`flex-1 px-3 py-1.5 rounded text-xs border ${
+                    (styles.backgroundType || 'color') === value
+                      ? 'bg-primary text-white border-primary'
+                      : 'border-gray-300 hover:border-primary'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Color Background */}
+        {(selection.type !== 'section' || !styles.backgroundType || styles.backgroundType === 'color') && (
+          <div className="space-y-2">
+            <label className="text-xs font-medium">צבע רקע</label>
+            <input
+              type="color"
+              value={styles.backgroundColor || '#ffffff'}
+              onChange={(e) => updateStyle('backgroundColor', e.target.value)}
+              className="w-full h-10 rounded border"
+            />
+          </div>
+        )}
+        
+        {/* Image Background */}
+        {selection.type === 'section' && styles.backgroundType === 'image' && (
+          <>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">URL תמונה</label>
+              <input
+                type="text"
+                value={styles.backgroundImage || ''}
+                onChange={(e) => updateStyle('backgroundImage', e.target.value)}
+                className="w-full px-3 py-2 border rounded text-sm"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">מיקום</label>
+              <select
+                value={styles.backgroundPosition || 'center center'}
+                onChange={(e) => updateStyle('backgroundPosition', e.target.value)}
+                className="w-full px-2 py-1.5 border rounded text-sm"
+              >
+                <option value="center center">מרכז</option>
+                <option value="top center">למעלה במרכז</option>
+                <option value="bottom center">למטה במרכז</option>
+                <option value="center left">מרכז שמאל</option>
+                <option value="center right">מרכז ימין</option>
+                <option value="top left">למעלה שמאל</option>
+                <option value="top right">למעלה ימין</option>
+                <option value="bottom left">למטה שמאל</option>
+                <option value="bottom right">למטה ימין</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">גודל</label>
+              <select
+                value={styles.backgroundSize || 'cover'}
+                onChange={(e) => updateStyle('backgroundSize', e.target.value)}
+                className="w-full px-2 py-1.5 border rounded text-sm"
+              >
+                <option value="cover">כיסוי מלא (Cover)</option>
+                <option value="contain">התאמה (Contain)</option>
+                <option value="auto">אוטומטי</option>
+                <option value="100% 100%">מתיחה 100%</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">חזרה</label>
+              <select
+                value={styles.backgroundRepeat || 'no-repeat'}
+                onChange={(e) => updateStyle('backgroundRepeat', e.target.value)}
+                className="w-full px-2 py-1.5 border rounded text-sm"
+              >
+                <option value="no-repeat">ללא</option>
+                <option value="repeat">חזרה</option>
+                <option value="repeat-x">חזרה אופקית</option>
+                <option value="repeat-y">חזרה אנכית</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">שכבת צבע (Overlay)</label>
+              <input
+                type="color"
+                value={styles.backgroundOverlay || '#00000000'}
+                onChange={(e) => updateStyle('backgroundOverlay', e.target.value)}
+                className="w-full h-10 rounded border"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">שקיפות Overlay: {((styles.backgroundOverlayOpacity || 0) * 100).toFixed(0)}%</label>
+              <input
+                type="range"
+                value={styles.backgroundOverlayOpacity || 0}
+                onChange={(e) => updateStyle('backgroundOverlayOpacity', parseFloat(e.target.value))}
+                className="w-full"
+                min="0"
+                max="1"
+                step="0.01"
+              />
+            </div>
+          </>
+        )}
+        
+        {/* Video Background */}
+        {selection.type === 'section' && styles.backgroundType === 'video' && (
+          <>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">URL וידאו</label>
+              <input
+                type="text"
+                value={styles.backgroundVideo || ''}
+                onChange={(e) => updateStyle('backgroundVideo', e.target.value)}
+                className="w-full px-3 py-2 border rounded text-sm"
+                placeholder="https://example.com/video.mp4"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={styles.backgroundVideoLoop !== false}
+                  onChange={(e) => updateStyle('backgroundVideoLoop', e.target.checked)}
+                />
+                <span className="text-xs">לולאה</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={styles.backgroundVideoMuted !== false}
+                  onChange={(e) => updateStyle('backgroundVideoMuted', e.target.checked)}
+                />
+                <span className="text-xs">השתק</span>
+              </label>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">תמונת חלופית (Fallback)</label>
+              <input
+                type="text"
+                value={styles.backgroundVideoFallback || ''}
+                onChange={(e) => updateStyle('backgroundVideoFallback', e.target.value)}
+                className="w-full px-3 py-2 border rounded text-sm"
+                placeholder="https://example.com/fallback.jpg"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">שכבת צבע (Overlay)</label>
+              <input
+                type="color"
+                value={styles.backgroundOverlay || '#00000000'}
+                onChange={(e) => updateStyle('backgroundOverlay', e.target.value)}
+                className="w-full h-10 rounded border"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium">שקיפות Overlay: {((styles.backgroundOverlayOpacity || 0) * 100).toFixed(0)}%</label>
+              <input
+                type="range"
+                value={styles.backgroundOverlayOpacity || 0}
+                onChange={(e) => updateStyle('backgroundOverlayOpacity', parseFloat(e.target.value))}
+                className="w-full"
+                min="0"
+                max="1"
+                step="0.01"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Alignment for Section/Column */}
@@ -244,6 +419,37 @@ export default function StyleTab({ selection, sections, viewport, onUpdate }: Pa
                   {label}
                 </button>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dimensions for Section */}
+      {selection.type === 'section' && (
+        <div className="space-y-4">
+          <h4 className="font-semibold text-sm border-b pb-2">מימדים</h4>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-medium">גובה מינימום (px)</label>
+            <div className="flex gap-2 items-center">
+              <input
+                type="number"
+                value={styles.minHeight || 0}
+                onChange={(e) => updateStyle('minHeight', parseInt(e.target.value) || 0)}
+                className="w-24 px-2 py-1.5 border rounded text-sm"
+                min="0"
+                step="10"
+              />
+              <input
+                type="range"
+                value={styles.minHeight || 0}
+                onChange={(e) => updateStyle('minHeight', parseInt(e.target.value))}
+                className="flex-1"
+                min="0"
+                max="1000"
+                step="10"
+              />
+              <span className="text-xs text-gray-500 w-16">{styles.minHeight || 0}px</span>
             </div>
           </div>
         </div>

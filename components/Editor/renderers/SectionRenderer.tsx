@@ -234,6 +234,19 @@ export default function SectionRenderer({
   // Section styles
   const sectionStyle = stylesToCSS(section.styles, viewport)
 
+  // Add background image if set
+  if (section.styles.backgroundType === 'image' && section.styles.backgroundImage) {
+    sectionStyle.backgroundImage = `url(${section.styles.backgroundImage})`
+    sectionStyle.backgroundPosition = section.styles.backgroundPosition || 'center center'
+    sectionStyle.backgroundSize = section.styles.backgroundSize || 'cover'
+    sectionStyle.backgroundRepeat = section.styles.backgroundRepeat || 'no-repeat'
+  }
+
+  // Add min-height if set
+  if (section.styles.minHeight) {
+    sectionStyle.minHeight = `${section.styles.minHeight}px`
+  }
+
   // Grid style for columns
   const gridStyle: React.CSSProperties = {
     display: viewport === 'mobile' ? 'block' : 'grid',
@@ -245,6 +258,9 @@ export default function SectionRenderer({
   const customClass = section.advanced?.customClass || ''
   const customId = section.advanced?.customId || ''
 
+  // Check if has overlay
+  const hasOverlay = section.styles.backgroundOverlay && (section.styles.backgroundOverlayOpacity || 0) > 0
+
   return (
     <div
       ref={setNodeRef}
@@ -252,6 +268,37 @@ export default function SectionRenderer({
       id={customId}
       className={`relative group ${customClass}`}
     >
+      {/* Background Video */}
+      {section.styles.backgroundType === 'video' && section.styles.backgroundVideo && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <video
+            autoPlay
+            loop={section.styles.backgroundVideoLoop !== false}
+            muted={section.styles.backgroundVideoMuted !== false}
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              objectFit: 'cover',
+            }}
+          >
+            <source src={section.styles.backgroundVideo} type="video/mp4" />
+            {section.styles.backgroundVideoFallback && (
+              <img src={section.styles.backgroundVideoFallback} className="w-full h-full object-cover" alt="" />
+            )}
+          </video>
+        </div>
+      )}
+
+      {/* Background Overlay */}
+      {hasOverlay && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundColor: section.styles.backgroundOverlay,
+            opacity: section.styles.backgroundOverlayOpacity || 0,
+          }}
+        />
+      )}
       {/* Section Controls Bar */}
       <div
         className={`absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-purple-600 text-white rounded-full px-3 py-1.5 text-xs shadow-lg transition-opacity z-30 ${
@@ -318,7 +365,7 @@ export default function SectionRenderer({
         style={sectionStyle}
       >
         {/* Columns Grid */}
-        <div style={gridStyle}>
+        <div style={gridStyle} className="relative z-10">
           {section.columns.map((column) => (
             <ColumnDropZone
               key={column.id}
