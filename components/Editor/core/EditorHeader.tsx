@@ -1,7 +1,9 @@
 'use client'
 
 import { ViewportMode } from '../types'
-import { X, Save, Undo, Redo, Monitor, Tablet, Smartphone, Eye } from 'lucide-react'
+import { X, Save, Undo, Redo, Monitor, Tablet, Smartphone, Eye, Upload } from 'lucide-react'
+import { useState } from 'react'
+import MediaLibrary from '../MediaLibrary'
 
 interface EditorHeaderProps {
   title: string
@@ -28,21 +30,28 @@ export default function EditorHeader({
   canRedo,
   isSaving,
 }: EditorHeaderProps) {
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false)
+
   return (
-    <div className="h-16 border-b bg-white flex items-center justify-between px-6 flex-shrink-0">
-      {/* Left */}
-      <div className="flex items-center gap-4">
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
-            title="סגור"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-        <h1 className="text-lg font-semibold">{title}</h1>
-      </div>
+    <>
+      <div className="h-16 border-b bg-white flex items-center justify-between px-6 flex-shrink-0">
+        {/* Left */}
+        <div className="flex items-center gap-4">
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+              title="סגור"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: "'Pacifico', cursive" }}>
+            QuickLanding
+          </h1>
+          <span className="text-gray-300">|</span>
+          <h2 className="text-sm font-medium text-gray-600">{title}</h2>
+        </div>
 
       {/* Center - Viewport Switcher */}
       <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
@@ -105,6 +114,15 @@ export default function EditorHeader({
 
         <div className="w-px h-6 bg-gray-300 mx-2" />
 
+        <button
+          onClick={() => setShowMediaLibrary(true)}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          title="העלאת מדיה"
+        >
+          <Upload className="w-4 h-4" />
+          <span className="text-sm font-medium">מדיה</span>
+        </button>
+
         {onSave && (
           <button
             onClick={onSave}
@@ -117,6 +135,12 @@ export default function EditorHeader({
         )}
       </div>
     </div>
+
+    {/* Media Library Modal */}
+    {showMediaLibrary && (
+      <MediaLibrary onClose={() => setShowMediaLibrary(false)} />
+    )}
+  </>
   )
 }
 
