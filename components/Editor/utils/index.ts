@@ -363,7 +363,7 @@ export function findWidget(
 // Convert old flat widget structure to new section-based structure
 export function migrateOldStructure(oldWidgets: any[]): Section[] {
   if (!oldWidgets || oldWidgets.length === 0) {
-    return [createSection(1)]
+    return []
   }
 
   // Put all old widgets in a single column section

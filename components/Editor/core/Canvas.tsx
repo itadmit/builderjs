@@ -49,12 +49,30 @@ export default function Canvas({
         }`}
       >
         {sections.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-screen text-gray-400">
-            <FileText className="w-20 h-20 mb-4" />
-            <h3 className="text-2xl font-bold mb-2">הדף ריק</h3>
-            <p className="text-center max-w-md px-4">
-              התחל לבנות את הדף שלך על ידי הוספת סקשן מהפאנל בצד ימין
-            </p>
+          <div className="flex flex-col items-center justify-center min-h-screen text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
+            <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="relative mb-6">
+                <FileText className="w-24 h-24 mx-auto opacity-20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 border-4 border-dashed border-primary/30 rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+              <h3 className="text-3xl font-bold mb-3 text-gray-700">התחל לבנות! 🎨</h3>
+              <p className="text-lg text-gray-500 max-w-md px-4 mb-6">
+                גרור <span className="font-bold text-primary">סקשן</span> מהפאנל בצד ימין או <span className="font-bold text-primary">ווידג'ט</span> ישירות לכאן
+              </p>
+              <div className="flex gap-4 justify-center text-sm">
+                <div className="px-4 py-2 bg-white rounded-lg shadow-sm">
+                  <span className="font-medium">1.</span> בחר סקשן
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg shadow-sm">
+                  <span className="font-medium">2.</span> גרור ווידג'טים
+                </div>
+                <div className="px-4 py-2 bg-white rounded-lg shadow-sm">
+                  <span className="font-medium">3.</span> עצב
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
