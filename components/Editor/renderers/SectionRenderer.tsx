@@ -322,7 +322,7 @@ export default function SectionRenderer({
               sectionId={section.id}
               isActive={isSelected}
               isSelected={selectedColumnId === column.id}
-              onSelectWidget={(widgetId) => onSelectWidget(widgetId, column.id)}
+              onSelectWidget={(widgetId) => onSelectWidget(widgetId, column.id, section.id)}
               onDeleteWidget={(widgetId) => onDeleteWidget(widgetId, column.id)}
               onSelect={() => onSelectColumn(column.id)}
               selectedWidgetId={selectedWidgetId}

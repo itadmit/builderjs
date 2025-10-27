@@ -111,7 +111,10 @@ export default function WidgetRenderer({
       id={customId}
       className={containerClass}
       style={style}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}
     >
       {renderWidget()}
     </div>
