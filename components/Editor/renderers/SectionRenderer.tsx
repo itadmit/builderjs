@@ -142,14 +142,14 @@ function ColumnDropZone({
     },
   })
 
-  const columnStyle = {
+  const columnStyle: React.CSSProperties = {
     ...stylesToCSS(column.styles || {}, viewport),
     display: 'flex',
-    flexDirection: 'column' as const,
-    // Vertical alignment: use alignItems from section (למעלה/מרכז/למטה)
-    justifyContent: sectionStyles?.alignItems || 'flex-start',
+    flexDirection: 'column',
     // Horizontal: always stretch (full width)
     alignItems: 'stretch',
+    // Vertical alignment: use alignItems from section (למעלה/מרכז/למטה)
+    justifyContent: sectionStyles?.alignItems || 'flex-start',
   }
 
   return (
