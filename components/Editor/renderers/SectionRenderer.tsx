@@ -272,13 +272,17 @@ export default function SectionRenderer({
   }
 
   // Grid style for columns
+  const isSingleColumn = section.columnCount === 1
   const gridStyle: React.CSSProperties = {
-    display: viewport === 'mobile' ? 'block' : 'grid',
-    gridTemplateColumns: viewport === 'mobile' ? '1fr' : getColumnWidths(section),
+    display: viewport === 'mobile' || isSingleColumn ? 'flex' : 'grid',
+    flexDirection: viewport === 'mobile' || isSingleColumn ? 'column' : undefined,
+    gridTemplateColumns: viewport === 'mobile' || isSingleColumn ? undefined : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // Align columns within the section
+    // Align columns within the section - works for both flex and grid
     alignItems: section.styles.alignItems || 'stretch',
     justifyContent: section.styles.justifyContent || 'flex-start',
+    // Ensure full height for proper vertical alignment
+    minHeight: '100%',
   }
 
   // Add custom class and ID
@@ -384,15 +388,15 @@ export default function SectionRenderer({
           e.stopPropagation()
           onSelect()
         }}
-        className={`cursor-pointer transition-all ${
+        className={`cursor-pointer transition-all flex flex-col ${
           isSelected
             ? 'ring-4 ring-purple-500 ring-offset-4'
             : 'hover:ring-2 hover:ring-purple-300'
         }`}
-        style={sectionStyle}
+        style={{...sectionStyle, display: 'flex', flexDirection: 'column'}}
       >
         {/* Columns Grid */}
-        <div style={gridStyle} className="relative z-10">
+        <div style={gridStyle} className="relative z-10 flex-1">
           {section.columns.map((column) => (
             <ColumnDropZone
               key={column.id}
