@@ -201,10 +201,7 @@ function ColumnDropZone({
       {/* Widgets */}
       {column.widgets.length > 0 && (
         <SortableContext items={column.widgets.map((w) => w.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2 p-4 flex-1 w-full flex flex-col" style={{
-            justifyContent: sectionStyles?.alignItems || 'flex-start',
-            alignItems: 'stretch',
-          }}>
+          <div className="space-y-2 p-4 w-full">
             {column.widgets.map((widget) => (
               <SortableWidgetInColumn
                 key={widget.id}
