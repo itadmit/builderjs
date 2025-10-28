@@ -34,6 +34,22 @@ export default function StyleTab({ selection, sections, viewport, onUpdate }: Pa
 
   const fontSizeData = parseFontSize(styles.fontSize)
   const [fontUnit, setFontUnit] = useState(fontSizeData.unit)
+  
+  // Parse minHeight to get value and unit
+  const parseMinHeight = (minHeight: string | number = '0px') => {
+    const str = String(minHeight)
+    const match = str.match(/^(\d+(?:\.\d+)?)(px|vh)?$/)
+    if (match) {
+      return {
+        value: parseFloat(match[1]),
+        unit: match[2] || 'px'
+      }
+    }
+    return { value: 0, unit: 'px' }
+  }
+  
+  const minHeightData = parseMinHeight(styles.minHeight)
+  const [minHeightUnit, setMinHeightUnit] = useState(minHeightData.unit)
 
   const updateStyle = (key: string, value: any) => {
     onUpdate({ styles: { ...styles, [key]: value } })
@@ -430,26 +446,47 @@ export default function StyleTab({ selection, sections, viewport, onUpdate }: Pa
           <h4 className="font-semibold text-sm border-b pb-2">מימדים</h4>
           
           <div className="space-y-2">
-            <label className="text-xs font-medium">גובה מינימום (px)</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium">גובה מינימום</label>
+              <div className="flex gap-1">
+                {['px', 'vh'].map((unit) => (
+                  <button
+                    key={unit}
+                    onClick={() => {
+                      setMinHeightUnit(unit)
+                      const currentValue = parseMinHeight(styles.minHeight).value
+                      updateStyle('minHeight', `${currentValue}${unit}`)
+                    }}
+                    className={`px-2 py-0.5 text-xs rounded border ${
+                      minHeightUnit === unit
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-gray-300 hover:border-primary'
+                    }`}
+                  >
+                    {unit}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="flex gap-2 items-center">
               <input
                 type="number"
-                value={styles.minHeight || 0}
-                onChange={(e) => updateStyle('minHeight', parseInt(e.target.value) || 0)}
-                className="w-24 px-2 py-1.5 border rounded text-sm"
+                value={minHeightData.value}
+                onChange={(e) => updateStyle('minHeight', `${parseFloat(e.target.value) || 0}${minHeightUnit}`)}
+                className="w-20 px-2 py-1.5 border rounded text-sm"
                 min="0"
-                step="10"
+                step={minHeightUnit === 'vh' ? '1' : '10'}
               />
               <input
                 type="range"
-                value={styles.minHeight || 0}
-                onChange={(e) => updateStyle('minHeight', parseInt(e.target.value))}
+                value={minHeightData.value}
+                onChange={(e) => updateStyle('minHeight', `${parseFloat(e.target.value)}${minHeightUnit}`)}
                 className="flex-1"
                 min="0"
-                max="1000"
-                step="10"
+                max={minHeightUnit === 'vh' ? '100' : '1000'}
+                step={minHeightUnit === 'vh' ? '1' : '10'}
               />
-              <span className="text-xs text-gray-500 w-16">{styles.minHeight || 0}px</span>
+              <span className="text-xs text-gray-500 w-16">{minHeightData.value}{minHeightUnit}</span>
             </div>
           </div>
         </div>

@@ -253,7 +253,14 @@ export default function SectionRenderer({
 
   // Add min-height if set
   if (section.styles.minHeight) {
-    sectionStyle.minHeight = `${section.styles.minHeight}px`
+    // Check if value already has a unit (px or vh)
+    const minHeightValue = String(section.styles.minHeight)
+    if (minHeightValue.endsWith('px') || minHeightValue.endsWith('vh')) {
+      sectionStyle.minHeight = minHeightValue
+    } else {
+      // Legacy: assume px if no unit specified
+      sectionStyle.minHeight = `${section.styles.minHeight}px`
+    }
   }
 
   // Grid style for columns
