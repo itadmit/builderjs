@@ -278,9 +278,10 @@ export default function SectionRenderer({
     flexDirection: viewport === 'mobile' || isSingleColumn ? 'column' : undefined,
     gridTemplateColumns: viewport === 'mobile' || isSingleColumn ? undefined : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // Align columns within the section - works for both flex and grid
-    alignItems: section.styles.alignItems || 'stretch',
-    justifyContent: section.styles.justifyContent || 'flex-start',
+    // Vertical alignment - convert alignItems to justifyContent for column flex
+    justifyContent: section.styles.alignItems || 'flex-start',
+    // Keep full width - don't shrink horizontally
+    alignItems: 'stretch',
     // Ensure full height for proper vertical alignment
     minHeight: '100%',
   }
