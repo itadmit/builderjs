@@ -12,7 +12,7 @@ import {
 } from '../types'
 import { createSection, duplicateSection, migrateOldStructure, findSection, findColumn, findWidget, generateId } from '../utils'
 import { getWidgetDefinition } from '../utils/widgetDefinitions'
-import { DndContext, DragOverlay, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, DragOverEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCenter, closestCorners, rectIntersection, PointerSensor, KeyboardSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, DragOverEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import Canvas from './Canvas'
 import WidgetsPanel from '../panels/WidgetsPanel'
@@ -273,6 +273,13 @@ export default function VisualEditor({
     const { active, over } = event
     setActiveId(null)
 
+    console.log('Drag ended:', { 
+      activeId: active.id, 
+      activeType: active.data.current?.type,
+      overId: over?.id, 
+      overType: over?.data.current?.type 
+    })
+
     if (!over) return
 
     // Handle section reordering
@@ -402,7 +409,7 @@ export default function VisualEditor({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={rectIntersection}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
