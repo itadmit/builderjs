@@ -35,7 +35,7 @@ function SortableWidgetInColumn({
   onDelete: () => void
   viewport: ViewportMode
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver, overIndex, activeIndex } = useSortable({
     id: widget.id,
     data: {
       type: 'widget',
@@ -45,8 +45,8 @@ function SortableWidgetInColumn({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.3 : 1,
   }
 
   // Check if should hide on this viewport
@@ -58,15 +58,24 @@ function SortableWidgetInColumn({
     <div 
       ref={setNodeRef} 
       style={style} 
-      className={`relative group animate-in fade-in slide-in-from-top-4 duration-500 ${
-        isDragging ? 'z-50 scale-105 rotate-2' : ''
+      className={`relative group transition-all ${
+        isDragging ? 'z-50' : ''
       }`}
     >
+      {/* Drop indicator - shows where widget will be placed */}
+      {isOver && !isDragging && (
+        <div className="absolute -top-1 left-0 right-0 h-1 bg-blue-500 rounded-full shadow-lg z-30 animate-pulse">
+          <div className="absolute left-1/2 -translate-x-1/2 -top-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg">
+            🎯 שחרר כאן
+          </div>
+        </div>
+      )}
+      
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className={`absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center cursor-grab active:cursor-grabbing shadow-lg transition-all hover:scale-125 hover:shadow-xl z-20 ${
+        className={`absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center cursor-grab active:cursor-grabbing shadow-lg transition-all hover:scale-125 hover:shadow-xl z-[9998] ${
           isSelected ? 'opacity-100 ring-2 ring-blue-300' : 'opacity-0 group-hover:opacity-100'
         }`}
         title="↕️ גרור לסידור מחדש"
@@ -83,7 +92,7 @@ function SortableWidgetInColumn({
               onDelete()
             }
           }}
-          className="absolute -left-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-700 hover:scale-125 transition-all shadow-lg z-20 ring-2 ring-red-300"
+          className="absolute -left-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-700 hover:scale-125 transition-all shadow-lg z-[9998] ring-2 ring-red-300"
           title="🗑️ מחק widget"
         >
           <Trash2 className="w-4 h-4" />
@@ -186,7 +195,7 @@ function ColumnDropZone({
       {/* Widgets */}
       {column.widgets.length > 0 && (
         <SortableContext items={column.widgets.map((w) => w.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-4 p-4">
+          <div className="space-y-2 p-4">
             {column.widgets.map((widget) => (
               <SortableWidgetInColumn
                 key={widget.id}
@@ -301,7 +310,7 @@ export default function SectionRenderer({
       )}
       {/* Section Controls Bar */}
       <div
-        className={`absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-purple-600 text-white rounded-full px-3 py-1.5 text-xs shadow-lg transition-opacity z-30 ${
+        className={`absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-purple-600 text-white rounded-full px-3 py-1.5 text-xs shadow-lg transition-opacity z-[9999] ${
           isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         }`}
       >
@@ -315,7 +324,7 @@ export default function SectionRenderer({
       <div
         {...attributes}
         {...listeners}
-        className={`absolute -right-12 top-8 w-10 h-10 bg-purple-600 text-white rounded-lg flex items-center justify-center cursor-move shadow-lg transition-opacity z-30 ${
+        className={`absolute -right-12 top-8 w-10 h-10 bg-purple-600 text-white rounded-lg flex items-center justify-center cursor-move shadow-lg transition-opacity z-[9999] ${
           isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         }`}
         title="גרור סקשן"
@@ -325,7 +334,7 @@ export default function SectionRenderer({
 
       {/* Action Buttons */}
       {isSelected && (
-        <div className="absolute -left-12 top-8 flex flex-col gap-2 z-30">
+        <div className="absolute -left-12 top-8 flex flex-col gap-2 z-[9999]">
           <button
             onClick={(e) => {
               e.stopPropagation()

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import {
   EditorState,
   EditorSelection,
@@ -44,6 +44,7 @@ export default function VisualEditor({
   })
 
   const [activeId, setActiveId] = useState<string | null>(null)
+  const isProcessingDropRef = useRef(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -53,6 +54,28 @@ export default function VisualEditor({
     }),
     useSensor(KeyboardSensor)
   )
+
+  // Custom collision detection that prioritizes widgets and columns over sections
+  const customCollisionDetection = (args: any) => {
+    const rectIntersectionCollisions = rectIntersection(args)
+    
+    // If dragging a widget, prioritize widget and column collisions
+    if (args.active.data.current?.type === 'widget') {
+      // First try to find widget collisions
+      const widgetCollision = rectIntersectionCollisions.find(
+        (collision: any) => collision.data?.droppableContainer?.data?.current?.type === 'widget'
+      )
+      if (widgetCollision) return [widgetCollision]
+      
+      // Then try to find column collisions
+      const columnCollision = rectIntersectionCollisions.find(
+        (collision: any) => collision.data?.droppableContainer?.data?.current?.type === 'column'
+      )
+      if (columnCollision) return [columnCollision]
+    }
+    
+    return rectIntersectionCollisions
+  }
   
   // Add dragging class to body for cursor
   useEffect(() => {
@@ -266,31 +289,38 @@ export default function VisualEditor({
   // Drag and Drop handlers
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
-    console.log('Drag started:', event.active.id, event.active.data.current)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
 
-    console.log('Drag ended:', { 
-      activeId: active.id, 
-      activeType: active.data.current?.type,
-      overId: over?.id, 
-      overType: over?.data.current?.type 
-    })
-
     if (!over) return
+    if (active.id === over.id) return
+    
+    // Prevent duplicate processing
+    if (isProcessingDropRef.current) return
+    isProcessingDropRef.current = true
+    setTimeout(() => {
+      isProcessingDropRef.current = false
+    }, 100)
 
     // Handle section reordering
     if (active.data.current?.type === 'section' && over.data.current?.type === 'section') {
-      addToHistory()
       setState((prev) => {
         const oldIndex = prev.sections.findIndex((s) => s.id === active.id)
         const newIndex = prev.sections.findIndex((s) => s.id === over.id)
+        
+        if (oldIndex === newIndex) return prev
+        
+        const newSections = arrayMove(prev.sections, oldIndex, newIndex)
         return {
           ...prev,
-          sections: arrayMove(prev.sections, oldIndex, newIndex),
+          sections: newSections,
+          history: {
+            past: [...prev.history.past, prev.sections],
+            future: [],
+          },
         }
       })
       return
@@ -298,40 +328,105 @@ export default function VisualEditor({
 
     // Handle widget reordering within same column
     if (active.data.current?.type === 'widget' && over.data.current?.type === 'widget') {
-      addToHistory()
       setState((prev) => {
-        const activeWidget = findWidget(prev.sections, active.id as string)
-        const overWidget = findWidget(prev.sections, over.id as string)
+        const activeResult = findWidget(prev.sections, active.id as string)
+        const overResult = findWidget(prev.sections, over.id as string)
         
-        if (!activeWidget || !overWidget) return prev
+        if (!activeResult || !overResult) return prev
         
         // Only reorder if in same column
-        if (activeWidget.columnId === overWidget.columnId && activeWidget.sectionId === overWidget.sectionId) {
+        if (activeResult.column.id !== overResult.column.id || activeResult.section.id !== overResult.section.id) {
+          return prev
+        }
+        
+        const oldIndex = activeResult.column.widgets.findIndex((w) => w.id === active.id)
+        const newIndex = activeResult.column.widgets.findIndex((w) => w.id === over.id)
+        
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return prev
+        
+        // Create new sections with reordered widgets
+        const newSections = prev.sections.map((section) => {
+          if (section.id !== activeResult.section.id) return section
+          
           return {
-            ...prev,
-            sections: prev.sections.map((section) => {
-              if (section.id !== activeWidget.sectionId) return section
+            ...section,
+            columns: section.columns.map((col) => {
+              if (col.id !== activeResult.column.id) return col
               
               return {
-                ...section,
-                columns: section.columns.map((col) => {
-                  if (col.id !== activeWidget.columnId) return col
-                  
-                  const oldIndex = col.widgets.findIndex((w) => w.id === active.id)
-                  const newIndex = col.widgets.findIndex((w) => w.id === over.id)
-                  
-                  return {
-                    ...col,
-                    widgets: arrayMove(col.widgets, oldIndex, newIndex),
-                  }
-                }),
+                ...col,
+                widgets: arrayMove([...col.widgets], oldIndex, newIndex),
               }
             }),
           }
+        })
+        
+        return {
+          ...prev,
+          sections: newSections,
+          history: {
+            past: [...prev.history.past, prev.sections],
+            future: [],
+          },
+        }
+      })
+      
+      return
+    }
+
+    // Handle new widget drop on existing widget - insert at that position
+    if (active.data.current?.type === 'new-widget' && over.data.current?.type === 'widget') {
+      setState((prev) => {
+        const overResult = findWidget(prev.sections, over.id as string)
+        if (!overResult) return prev
+        
+        const widgetType = active.data.current.widgetType as WidgetType
+        const definition = getWidgetDefinition(widgetType)
+        if (!definition) return prev
+        
+        const newWidget: Widget = {
+          type: widgetType,
+          id: generateId(),
+          content: definition.defaultContent || {},
+          styles: definition.defaultStyles || {},
+          advanced: {},
         }
         
-        return prev
+        const newSections = prev.sections.map((section) => {
+          if (section.id !== overResult.section.id) return section
+          
+          return {
+            ...section,
+            columns: section.columns.map((col) => {
+              if (col.id !== overResult.column.id) return col
+              
+              // Find position of the widget we're dropping on
+              const insertIndex = col.widgets.findIndex((w) => w.id === over.id)
+              if (insertIndex === -1) return col
+              
+              // Insert new widget AFTER the widget we're dropping on
+              const newWidgets = [...col.widgets]
+              newWidgets.splice(insertIndex + 1, 0, newWidget)
+              
+              return {
+                ...col,
+                widgets: newWidgets,
+              }
+            }),
+          }
+        })
+        
+        return {
+          ...prev,
+          sections: newSections,
+          history: {
+            past: [...prev.history.past, prev.sections],
+            future: [],
+          },
+          selection: { type: 'widget', id: newWidget.id, columnId: overResult.column.id, sectionId: overResult.section.id },
+        }
       })
+      
       return
     }
 
@@ -350,10 +445,9 @@ export default function VisualEditor({
         if (activeWidget) {
           // Only move if to different column
           if (activeWidget.columnId !== columnId || activeWidget.sectionId !== sectionId) {
-            addToHistory()
             setState((prev) => {
               // Remove from old location
-              const newSections = prev.sections.map((section) => ({
+              const sectionsWithoutWidget = prev.sections.map((section) => ({
                 ...section,
                 columns: section.columns.map((col) => ({
                   ...col,
@@ -362,21 +456,27 @@ export default function VisualEditor({
               }))
               
               // Add to new location
+              const finalSections = sectionsWithoutWidget.map((section) => {
+                if (section.id !== sectionId) return section
+                return {
+                  ...section,
+                  columns: section.columns.map((col) => {
+                    if (col.id !== columnId) return col
+                    return {
+                      ...col,
+                      widgets: [...col.widgets, activeWidget.widget],
+                    }
+                  }),
+                }
+              })
+              
               return {
                 ...prev,
-                sections: newSections.map((section) => {
-                  if (section.id !== sectionId) return section
-                  return {
-                    ...section,
-                    columns: section.columns.map((col) => {
-                      if (col.id !== columnId) return col
-                      return {
-                        ...col,
-                        widgets: [...col.widgets, activeWidget.widget],
-                      }
-                    }),
-                  }
-                }),
+                sections: finalSections,
+                history: {
+                  past: [...prev.history.past, prev.sections],
+                  future: [],
+                },
               }
             })
           }
@@ -409,7 +509,7 @@ export default function VisualEditor({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={rectIntersection}
+      collisionDetection={customCollisionDetection}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
