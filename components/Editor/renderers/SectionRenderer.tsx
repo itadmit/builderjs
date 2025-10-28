@@ -273,12 +273,13 @@ export default function SectionRenderer({
 
   // Grid style for columns
   const gridStyle: React.CSSProperties = {
-    display: viewport === 'mobile' ? 'block' : 'grid',
-    gridTemplateColumns: viewport === 'mobile' ? '1fr' : getColumnWidths(section),
+    display: viewport === 'mobile' ? 'flex' : 'grid',
+    flexDirection: viewport === 'mobile' ? 'column' : undefined,
+    gridTemplateColumns: viewport === 'mobile' ? undefined : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // Add alignment for the grid items (columns)
-    justifyItems: section.styles.justifyContent || 'stretch',
-    alignItems: section.styles.alignItems || 'stretch',
+    // Add alignment for the grid content (not items)
+    justifyContent: section.styles.justifyContent,
+    alignContent: section.styles.alignItems,
   }
 
   // Add custom class and ID
