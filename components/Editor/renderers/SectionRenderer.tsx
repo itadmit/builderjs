@@ -273,15 +273,18 @@ export default function SectionRenderer({
 
   // Grid style for columns
   const isSingleColumn = section.columnCount === 1
+  const useFlex = viewport === 'mobile' || isSingleColumn
+  
   const gridStyle: React.CSSProperties = {
-    display: viewport === 'mobile' || isSingleColumn ? 'flex' : 'grid',
-    flexDirection: viewport === 'mobile' || isSingleColumn ? 'column' : undefined,
-    gridTemplateColumns: viewport === 'mobile' || isSingleColumn ? undefined : getColumnWidths(section),
+    display: useFlex ? 'flex' : 'grid',
+    flexDirection: useFlex ? 'column' : undefined,
+    gridTemplateColumns: useFlex ? undefined : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // Vertical alignment - convert alignItems to justifyContent for column flex
-    justifyContent: section.styles.alignItems || 'flex-start',
+    // For flex column: justifyContent controls vertical, alignItems controls horizontal
+    // alignItems from StyleTab (למעלה/מרכז/למטה) → justifyContent in flex column
+    justifyContent: useFlex ? (section.styles.alignItems || 'flex-start') : undefined,
     // Keep full width - don't shrink horizontally
-    alignItems: 'stretch',
+    alignItems: useFlex ? 'stretch' : (section.styles.alignItems || 'stretch'),
     // Ensure full height for proper vertical alignment
     minHeight: '100%',
   }
