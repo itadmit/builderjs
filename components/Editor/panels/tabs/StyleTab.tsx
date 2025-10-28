@@ -367,31 +367,7 @@ export default function StyleTab({ selection, sections, viewport, onUpdate }: Pa
           <h4 className="font-semibold text-sm border-b pb-2">מיקום</h4>
           
           <div className="space-y-2">
-            <label className="text-xs font-medium">יישור אופקי</label>
-            <div className="flex gap-2">
-              {[
-                { value: 'flex-start', label: 'ימין', icon: '→' },
-                { value: 'center', label: 'מרכז', icon: '↔' },
-                { value: 'flex-end', label: 'שמאל', icon: '←' },
-              ].map(({ value, label, icon }) => (
-                <button
-                  key={value}
-                  onClick={() => updateStyle('justifyContent', value)}
-                  className={`flex-1 px-2 py-2 rounded text-xs border flex flex-col items-center gap-1 ${
-                    styles.justifyContent === value
-                      ? 'bg-primary text-white border-primary'
-                      : 'border-gray-300 hover:border-primary'
-                  }`}
-                >
-                  <span className="text-lg">{icon}</span>
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-medium">יישור אנכי</label>
+            <label className="text-xs font-medium">יישור תוכן בסקשן</label>
             <div className="flex gap-2">
               {[
                 { value: 'flex-start', label: 'למעלה', icon: '↑' },

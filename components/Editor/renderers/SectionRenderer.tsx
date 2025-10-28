@@ -57,7 +57,7 @@ function SortableWidgetInColumn({
   return (
     <div 
       ref={setNodeRef} 
-      style={style} 
+      style={{...style, width: '100%'}} 
       className={`relative group transition-all ${
         isDragging ? 'z-50' : ''
       }`}
@@ -146,9 +146,10 @@ function ColumnDropZone({
     ...stylesToCSS(column.styles || {}, viewport),
     display: 'flex',
     flexDirection: 'column' as const,
-    // Inherit alignment from section if not set on column
-    justifyContent: column.styles?.justifyContent || sectionStyles?.justifyContent || 'flex-start',
-    alignItems: column.styles?.alignItems || sectionStyles?.alignItems || 'stretch',
+    // Vertical alignment: use alignItems from section (למעלה/מרכז/למטה)
+    justifyContent: sectionStyles?.alignItems || 'flex-start',
+    // Horizontal: always stretch (full width)
+    alignItems: 'stretch',
   }
 
   return (
@@ -201,8 +202,8 @@ function ColumnDropZone({
       {column.widgets.length > 0 && (
         <SortableContext items={column.widgets.map((w) => w.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-2 p-4 flex-1 w-full flex flex-col" style={{
-            justifyContent: column.styles?.justifyContent || sectionStyles?.justifyContent || 'flex-start',
-            alignItems: column.styles?.alignItems || sectionStyles?.alignItems || 'stretch',
+            justifyContent: sectionStyles?.alignItems || 'flex-start',
+            alignItems: 'stretch',
           }}>
             {column.widgets.map((widget) => (
               <SortableWidgetInColumn
@@ -280,11 +281,10 @@ export default function SectionRenderer({
     flexDirection: useFlex ? 'column' : undefined,
     gridTemplateColumns: useFlex ? undefined : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // For flex column: justifyContent controls vertical, alignItems controls horizontal
-    // alignItems from StyleTab (למעלה/מרכז/למטה) → justifyContent in flex column
+    // Vertical alignment (למעלה/מרכז/למטה) - from alignItems
     justifyContent: useFlex ? (section.styles.alignItems || 'flex-start') : undefined,
-    // Keep full width - don't shrink horizontally
-    alignItems: useFlex ? 'stretch' : (section.styles.alignItems || 'stretch'),
+    // Horizontal: always stretch (full width)
+    alignItems: 'stretch',
     // Ensure full height for proper vertical alignment
     minHeight: '100%',
   }
