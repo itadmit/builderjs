@@ -119,6 +119,7 @@ function ColumnDropZone({
   onSelect,
   selectedWidgetId,
   viewport,
+  sectionStyles,
 }: {
   column: Column
   sectionId: string
@@ -129,6 +130,7 @@ function ColumnDropZone({
   onSelect: () => void
   selectedWidgetId?: string
   viewport: ViewportMode
+  sectionStyles?: any
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `column-${column.id}`,
@@ -144,6 +146,9 @@ function ColumnDropZone({
     ...stylesToCSS(column.styles || {}, viewport),
     display: 'flex',
     flexDirection: 'column' as const,
+    // Inherit alignment from section if not set on column
+    justifyContent: column.styles?.justifyContent || sectionStyles?.justifyContent || 'flex-start',
+    alignItems: column.styles?.alignItems || sectionStyles?.alignItems || 'stretch',
   }
 
   return (
@@ -195,7 +200,10 @@ function ColumnDropZone({
       {/* Widgets */}
       {column.widgets.length > 0 && (
         <SortableContext items={column.widgets.map((w) => w.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2 p-4">
+          <div className="space-y-2 p-4 flex-1 w-full flex flex-col" style={{
+            justifyContent: column.styles?.justifyContent || sectionStyles?.justifyContent || 'flex-start',
+            alignItems: column.styles?.alignItems || sectionStyles?.alignItems || 'stretch',
+          }}>
             {column.widgets.map((widget) => (
               <SortableWidgetInColumn
                 key={widget.id}
@@ -394,6 +402,7 @@ export default function SectionRenderer({
               onSelect={() => onSelectColumn(column.id)}
               selectedWidgetId={selectedWidgetId}
               viewport={viewport}
+              sectionStyles={section.styles}
             />
           ))}
         </div>
