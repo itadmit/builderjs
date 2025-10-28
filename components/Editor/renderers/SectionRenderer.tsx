@@ -276,6 +276,9 @@ export default function SectionRenderer({
     display: viewport === 'mobile' ? 'block' : 'grid',
     gridTemplateColumns: viewport === 'mobile' ? '1fr' : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
+    // Add alignment for the grid items (columns)
+    justifyItems: section.styles.justifyContent || 'stretch',
+    alignItems: section.styles.alignItems || 'stretch',
   }
 
   // Add custom class and ID
@@ -389,7 +392,7 @@ export default function SectionRenderer({
         style={sectionStyle}
       >
         {/* Columns Grid */}
-        <div style={gridStyle} className="relative z-10">
+        <div style={{...gridStyle, height: '100%'}} className="relative z-10">
           {section.columns.map((column) => (
             <ColumnDropZone
               key={column.id}
