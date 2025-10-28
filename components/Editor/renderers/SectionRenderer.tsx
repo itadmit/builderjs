@@ -59,19 +59,19 @@ function SortableWidgetInColumn({
       ref={setNodeRef} 
       style={style} 
       className={`relative group animate-in fade-in slide-in-from-top-4 duration-500 ${
-        isDragging ? 'z-50' : ''
+        isDragging ? 'z-50 scale-105 rotate-2' : ''
       }`}
     >
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className={`absolute -right-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-blue-500 text-white rounded flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-20 ${
-          isSelected ? 'opacity-100' : ''
+        className={`absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center cursor-grab active:cursor-grabbing shadow-lg transition-all hover:scale-125 hover:shadow-xl z-20 ${
+          isSelected ? 'opacity-100 ring-2 ring-blue-300' : 'opacity-0 group-hover:opacity-100'
         }`}
-        title="גרור widget"
+        title="↕️ גרור לסידור מחדש"
       >
-        <GripVertical className="w-3 h-3" />
+        <GripVertical className="w-4 h-4" />
       </div>
 
       {/* Delete Button */}
@@ -83,10 +83,10 @@ function SortableWidgetInColumn({
               onDelete()
             }
           }}
-          className="absolute -left-8 top-1/2 -translate-y-1/2 w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 hover:scale-110 transition-all z-20"
-          title="מחק"
+          className="absolute -left-10 top-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg flex items-center justify-center hover:bg-red-700 hover:scale-125 transition-all shadow-lg z-20 ring-2 ring-red-300"
+          title="🗑️ מחק widget"
         >
-          <Trash2 className="w-3 h-3" />
+          <Trash2 className="w-4 h-4" />
         </button>
       )}
 
