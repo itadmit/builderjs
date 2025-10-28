@@ -273,13 +273,12 @@ export default function SectionRenderer({
 
   // Grid style for columns
   const gridStyle: React.CSSProperties = {
-    display: viewport === 'mobile' ? 'flex' : 'grid',
-    flexDirection: viewport === 'mobile' ? 'column' : undefined,
-    gridTemplateColumns: viewport === 'mobile' ? undefined : getColumnWidths(section),
+    display: viewport === 'mobile' ? 'block' : 'grid',
+    gridTemplateColumns: viewport === 'mobile' ? '1fr' : getColumnWidths(section),
     gap: `${section.gap || 20}px`,
-    // Add alignment for the grid content (not items)
-    justifyContent: section.styles.justifyContent,
-    alignContent: section.styles.alignItems,
+    // Align columns within the section
+    alignItems: section.styles.alignItems || 'stretch',
+    justifyContent: section.styles.justifyContent || 'flex-start',
   }
 
   // Add custom class and ID
@@ -393,7 +392,7 @@ export default function SectionRenderer({
         style={sectionStyle}
       >
         {/* Columns Grid */}
-        <div style={{...gridStyle, height: '100%'}} className="relative z-10">
+        <div style={gridStyle} className="relative z-10">
           {section.columns.map((column) => (
             <ColumnDropZone
               key={column.id}
